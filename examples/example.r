@@ -2,7 +2,7 @@
 # Martin Boer
 #
 rm(list = ls())
-source('MMBsplines.r')
+library('MMBsplines')
 
 # Set parameters:
 nobs = 1000
@@ -13,7 +13,7 @@ nseg = 100
 # Simulate data:
 set.seed(949030)
 sim.fun = function(x) { return(3.0 + 0.1*x + sin(2*pi*x))}
-x = runif(nobs, min=xmin, max=xmax)
+x = runif(nobs, min = xmin, max = xmax)
 y = sim.fun(x) + 0.5*rnorm(nobs)
 
 # run MMBsplines, using quadratic B-splines (default)

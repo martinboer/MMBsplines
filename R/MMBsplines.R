@@ -6,20 +6,20 @@
 library(spam)
 library(splines)
 
-# simple function to convert from Matrix to spam:
-convertMatrix2spam = function(M) {
-  # save in triplet format:
-  u = summary(M)
-  # right input for spam:
-  L = list(i=as.vector(u$i),j=as.vector(u$j),values=as.vector(u$x))
-  M2 = spam(L)
-  pad(M2) = dim(M)
-  M2
-}
+# # simple function to convert from Matrix to spam:
+# convertMatrix2spam = function(M) {
+#   # save in triplet format:
+#   u = summary(M)
+#   # right input for spam:
+#   L = list(i=as.vector(u$i),j=as.vector(u$j),values=as.vector(u$x))
+#   M2 = spam(L)
+#   pad(M2) = dim(M)
+#   M2
+# }
 
 # converter from splineDesign to spam:
 splineDesign.sparse = function(knots, x, ord = 4, derivs, outer.ok = FALSE) {
-  convertMatrix2spam(splineDesign(knots, x, ord, derivs, sparse=TRUE))
+  as.spam(splineDesign(knots, x, ord, derivs))
 }
 
 REMLlogprofile.sparse = function(x,obj) {
@@ -30,7 +30,7 @@ REMLlogprofile.sparse = function(x,obj) {
   s = n - p
   log.detQ = obj$log_det_Q
   cholC = update(obj$cholC,obj$UtU + lambda * obj$Q_all)
-  a = backsolve(cholC, forwardsolve(cholC,obj$Uty))
+  a = backsolve.spam(cholC, forwardsolve.spam(cholC,obj$Uty))
   yPy = obj$ssy - sum(a*obj$Uty) 
   sigma2 = yPy/(n-p)
   log.detC = 2.0*as.double(determinant(cholC)$modulus)
@@ -119,7 +119,7 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,method="MMB")
   lambda_opt = 10^(result$maximum)
   logL_opt = result$objective
   cholC = update(cholC,UtU + lambda_opt * Q_all)
-  a = backsolve(cholC, forwardsolve(cholC,Uty))
+  a = backsolve.spam(cholC, forwardsolve.spam(cholC,Uty))
   yPy = ssy - sum(a*Uty) 
   sigma2 = yPy/(N-p)
   
