@@ -6,22 +6,6 @@
 library(spam)
 library(splines)
 
-# # simple function to convert from Matrix to spam:
-# convertMatrix2spam = function(M) {
-#   # save in triplet format:
-#   u = summary(M)
-#   # right input for spam:
-#   L = list(i=as.vector(u$i),j=as.vector(u$j),values=as.vector(u$x))
-#   M2 = spam(L)
-#   pad(M2) = dim(M)
-#   M2
-# }
-
-# converter from splineDesign to spam:
-splineDesign.sparse = function(knots, x, ord = 4, derivs, outer.ok = FALSE) {
-  as.spam(splineDesign(knots, x, ord, derivs))
-}
-
 REMLlogprofile.sparse = function(x,obj) {
   lambda = 10^x
   n = obj$N
@@ -56,7 +40,7 @@ REMLlogprofile.dense = function(x,obj) {
   logL
 }
 
-MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,method="MMB")
+MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE)
 {
   t0 = proc.time()[1]
   ord = 2
@@ -69,7 +53,7 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,method="MMB")
   dim = ncol(B)
   X = matrix(outer(x,c(0:(p-1)),"^"),ncol=p)
   D = diff(diag.spam(dim), diff=2)
-  if (method == "CD") {
+  if (sparse==FALSE) {
     Z = B %*% t(D) %*% solve(D%*%t(D))
   } else
     Z = B %*% t(D)
@@ -78,7 +62,7 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,method="MMB")
   UtU = t(U) %*% U
   Uty = t(U) %*% y
   m = ncol(B)
-  if (method == "CD")
+  if (sparse == FALSE)
   {
     Q = diag(m-2)
   }
@@ -108,7 +92,7 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,method="MMB")
   L = list(cholC=cholC,UtU=UtU,Uty=Uty,Q_all = Q_all, 
               ssy=ssy, p=p, q=q, N=N, log_det_Q = log_det_Q,xmin=xmin,xmax=xmax,nseg=nseg,
            deg=deg,knots=knots)
-  if (method == "CD")
+  if (sparse==FALSE)
   {
     result = optimize(REMLlogprofile.dense,c(-6,6),tol=1.0e-8,obj=L,maximum=TRUE)
   } else
@@ -166,3 +150,19 @@ summary.MMBsplines = function(obj)
     "\nb1:          ", obj$a[2],
     "\ncomp. time:  ", obj$time, ' seconds\n')
 }
+
+# # simple function to convert from Matrix to spam:
+# convertMatrix2spam = function(M) {
+#   # save in triplet format:
+#   u = summary(M)
+#   # right input for spam:
+#   L = list(i=as.vector(u$i),j=as.vector(u$j),values=as.vector(u$x))
+#   M2 = spam(L)
+#   pad(M2) = dim(M)
+#   M2
+# }
+
+# converter from splineDesign to spam:
+#splineDesign.sparse = function(knots, x, ord = 4, derivs, outer.ok = FALSE) {
+#  as.spam(splineDesign(knots, x, ord, derivs))
+#}
