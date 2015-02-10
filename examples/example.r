@@ -5,12 +5,10 @@
 rm(list = ls())
 library('MMBsplines')
 
-# set parameters:
+# set parameters and simulate data:
 nobs = 1000
 xmin = 0
 xmax = 10
-
-# simulate data:
 set.seed(949030)
 sim.fun = function(x) { return(3.0 + 0.1*x + sin(2*pi*x))}
 x = runif(nobs, min = xmin, max = xmax)
