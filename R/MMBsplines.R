@@ -6,6 +6,12 @@
 library(spam)
 library(splines)
 
+# converter from splineDesign to spam:
+splineDesign.sparse = function(knots, x, ord = 4, derivs, outer.ok = FALSE) {
+  as.spam(splineDesign(knots, x, ord, derivs))
+}
+
+
 REMLlogprofile.sparse = function(x,obj) {
   lambda = 10^x
   n = obj$N
@@ -162,7 +168,3 @@ summary.MMBsplines = function(obj)
 #   M2
 # }
 
-# converter from splineDesign to spam:
-#splineDesign.sparse = function(knots, x, ord = 4, derivs, outer.ok = FALSE) {
-#  as.spam(splineDesign(knots, x, ord, derivs))
-#}
