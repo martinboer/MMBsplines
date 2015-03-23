@@ -4,6 +4,7 @@
 # 
 rm(list = ls())
 library('MMBsplines')
+packageDescription('MMBsplines')
 
 # set parameters and simulate data:
 nobs = 1000
