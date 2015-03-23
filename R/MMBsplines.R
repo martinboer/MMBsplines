@@ -8,9 +8,8 @@ library(splines)
 
 # converter from splineDesign to spam:
 splineDesign.sparse = function(knots, x, ord = 4, derivs, outer.ok = FALSE) {
-  as.spam(splineDesign(knots, x, ord, derivs))
+  as.spam.dgCMatrix(splineDesign(knots, x, ord, derivs, sparse = TRUE))
 }
-
 
 REMLlogprofile.sparse = function(x,obj) {
   lambda = 10^x
