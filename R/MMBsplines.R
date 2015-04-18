@@ -45,7 +45,7 @@ REMLlogprofile.dense = function(x,obj) {
   logL
 }
 
-MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE)
+MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimize=TRUE)
 {
   t0 = proc.time()[1]
   ord = 2
@@ -91,22 +91,34 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE)
   ssy = sum(y^2)
   
   # in the for-loop we use update of Cholesky:
-  lambda = 1.0
+  #lambda = 1.0
   C = UtU + lambda * Q_all
   cholC = chol(C)
   L = list(cholC=cholC,UtU=UtU,Uty=Uty,Q_all = Q_all, 
               ssy=ssy, p=p, q=q, N=N, log_det_Q = log_det_Q,xmin=xmin,xmax=xmax,nseg=nseg,
            deg=deg,knots=knots)
-  if (sparse==FALSE)
+  if (optimize)
   {
-    result = optimize(REMLlogprofile.dense,c(-6,6),tol=1.0e-8,obj=L,maximum=TRUE)
-  } else
-  {
-    result = optimize(REMLlogprofile.sparse,c(-6,6),tol=1.0e-8,obj=L,maximum=TRUE)
-  }
+    if (sparse==FALSE)
+    {
+      result = optimize(REMLlogprofile.dense,c(-6,6),tol=1.0e-8,obj=L,maximum=TRUE)
+    } else
+    {
+      result = optimize(REMLlogprofile.sparse,c(-6,6),tol=1.0e-8,obj=L,maximum=TRUE)
+    }
   
-  lambda_opt = 10^(result$maximum)
-  logL_opt = result$objective
+    lambda_opt = 10^(result$maximum)
+    logL_opt = result$objective
+  } else {
+    if (sparse==FALSE)
+    {
+      logL_opt = REMLlogprofile.dense(log10(lambda),L)
+    } else
+    {
+      logL_opt = REMLlogprofile.sparse(log10(lambda),L)
+    }
+    lambda_opt = lambda
+  }
   cholC = update(cholC,UtU + lambda_opt * Q_all)
   a = backsolve.spam(cholC, forwardsolve.spam(cholC,Uty))
   yPy = ssy - sum(a*Uty) 
