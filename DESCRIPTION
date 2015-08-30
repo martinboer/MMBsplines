@@ -1,8 +1,8 @@
 Package: MMBsplines
 Type: Package
 Title: Mixed Model B-splines
-Version: 1.04
-Date: 2015-04-18
+Version: 1.05
+Date: 2015-08-30
 Author: Martin Boer, Biometris, WUR, Wageningen, The Netherlands. 
 Maintainer: Martin Boer <martin.boer@wur.nl>
 Description: Mixed Model B-splines

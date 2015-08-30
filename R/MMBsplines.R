@@ -70,6 +70,7 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimiz
   if (sparse == FALSE)
   {
     Q = diag(m-2)
+    log_det_Q = 0.0
   }
   else
   {
@@ -77,14 +78,18 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimiz
     if (deg == 3) {
       A = (1/6)*(abs(row(A)-col(A))==1) + diag(4/6,m-2)
     }
-    P = t(D) %*% A %*% D
-    Q = D %*% P %*% t(D)
-    if (nseg > 500) {
-      Q = Q + 1.0e-12*diag.spam(m-2)
-    }  
+    #P = t(D) %*% A %*% D
+    B = D %*% t(D)
+    Q = B %*% A %*% B
+    log_det_B = as.double(determinant(B)$modulus)
+    log_det_A = as.double(determinant(A)$modulus)
+    log_det_Q = 2*log_det_B + log_det_A
+    #if (nseg > 500) {
+    #  Q = Q + 1.0e-12*diag.spam(m-2)
+    #}  
   }
   
-  log_det_Q = as.double(determinant(Q)$modulus)
+  #log_det_Q = 2.0*as.double(determinant(D %*%t(D))$modulus)
   Q_all = bdiag.spam(diag.spam(0,2),Q)
   penaltylog10 = seq(-6,6, by=0.1)
   q = ncol(U)-2
