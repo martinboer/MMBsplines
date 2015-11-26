@@ -48,16 +48,15 @@ REMLlogprofile.dense = function(x,obj) {
 MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimize=TRUE)
 {
   t0 = proc.time()[1]
-  ord = 2
   p = 2
   N = length(y)
   dx = (xmax - xmin) / nseg
   knots = seq(xmin - deg * dx, xmax + deg * dx, by = dx)
   B = splineDesign.sparse(knots, x, derivs=rep(0,N), ord = deg + 1)
   
-  dim = ncol(B)
+  m = ncol(B)
   X = matrix(outer(x,c(0:(p-1)),"^"),ncol=p)
-  D = diff(diag.spam(dim), diff=2)
+  D = diff(diag.spam(m), diff=2)
   if (sparse==FALSE) {
     Z = B %*% t(D) %*% solve(D%*%t(D))
   } else
@@ -66,7 +65,6 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimiz
   U = cbind(X,Z)
   UtU = t(U) %*% U
   Uty = t(U) %*% y
-  m = ncol(B)
   if (sparse == FALSE)
   {
     Q = diag(m-2)
@@ -155,9 +153,9 @@ predict = function(obj, x, linear = FALSE)
   }
   derivs = rep(0,length(x))  
   B = splineDesign.sparse(obj$knots, x, derivs=rep(0,length(x)), ord = obj$deg + 1)  
-  dim = ncol(B)
+  m = ncol(B)
   X = matrix(outer(x0,c(0:(obj$p-1)),"^"),ncol=obj$p)
-  D = diff(diag.spam(dim), diff=2)
+  D = diff(diag.spam(m), diff=2)
   Z = B %*% t(D)
   U = cbind(X,Z)
   yhat = U %*% obj$a
