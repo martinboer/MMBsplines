@@ -45,7 +45,7 @@ REMLlogprofile.dense = function(x,obj) {
   logL
 }
 
-MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimize=TRUE)
+MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimize=TRUE,Psplines=TRUE)
 {
   t0 = proc.time()[1]
   p = 2
@@ -73,7 +73,7 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimiz
   else
   {
     A = diag.spam(m-2)
-    if (deg == 3) {
+    if (deg == 3 && !Psplines) {
       A = (1/6)*(abs(row(A)-col(A))==1) + diag(4/6,m-2)
     }
     #P = t(D) %*% A %*% D
