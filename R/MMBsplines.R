@@ -94,10 +94,10 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimiz
   ssy = sum(y^2)
   
   # in the for-loop we use update of Cholesky:
-  #lambda = 1.0
+  lambda = 1.0
   C = UtU + lambda * Q_all
   cholC = chol(C)
-  L = list(cholC=cholC,UtU=UtU,Uty=Uty,Q_all = Q_all, 
+  L = list(C, cholC=cholC,UtU=UtU,Uty=Uty,Q_all = Q_all, 
               ssy=ssy, p=p, q=q, N=N, log_det_Q = log_det_Q,xmin=xmin,xmax=xmax,nseg=nseg,
            deg=deg,knots=knots)
   if (optimize)
@@ -122,8 +122,15 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimiz
     }
     lambda_opt = lambda
   }
-  cholC = update(cholC,UtU + lambda_opt * Q_all)
-  a = backsolve.spam(cholC, forwardsolve.spam(cholC,Uty))
+  if (sparse==FALSE) {
+    C = UtU + lambda_opt * Q_all
+    cholC = chol(C)
+    a = backsolve(cholC, forwardsolve(t(cholC),Uty))
+  }
+  else {
+    cholC = update(cholC,UtU + lambda_opt * Q_all)
+    a = backsolve.spam(cholC, forwardsolve.spam(cholC,Uty))
+  }
   yPy = ssy - sum(a*Uty) 
   sigma2 = yPy/(N-p)
   
@@ -134,6 +141,7 @@ MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimiz
   L$cholC = cholC
   L$a = a
   L$sigma2 = sigma2  
+  L$method = ifelse(sparse,"SPARSE","DENSE")
   class(L) = "MMBsplines"
   L
 }
@@ -152,14 +160,26 @@ predict = function(obj, x, linear = FALSE)
     return(ylin)    
   }
   derivs = rep(0,length(x))  
-  B = splineDesign.sparse(obj$knots, x, derivs=rep(0,length(x)), ord = obj$deg + 1)  
-  m = ncol(B)
-  X = matrix(outer(x,c(0:(obj$p-1)),"^"),ncol=obj$p)
-  D = diff(diag.spam(m), diff=2)
-  Z = B %*% t(D)
-  U = cbind(X,Z)
-  yhat = U %*% obj$a
-  yhat
+  if (obj$method == "SPARSE")
+  {
+    B = splineDesign.sparse(obj$knots, x, derivs=rep(0,length(x)), ord = obj$deg + 1)  
+    m = ncol(B)
+    X = matrix(outer(x,c(0:(obj$p-1)),"^"),ncol=obj$p)
+    D = diff(diag.spam(m), diff=2)
+    Z = B %*% t(D)
+    U = cbind(X,Z)
+    yhat = U %*% obj$a
+    yhat
+  } else {
+    B = splineDesign(obj$knots, x, derivs=rep(0,length(x)), ord = obj$deg + 1)  
+    m = ncol(B)
+    X = matrix(outer(x,c(0:(obj$p-1)),"^"),ncol=obj$p)
+    D = diff(diag(m), diff=2)
+    Z = B %*% t(D) %*% solve(D%*%t(D))
+    U = cbind(X,Z)
+    yhat = U %*% obj$a
+    yhat    
+  }
 }
 
 summary.MMBsplines = function(obj)
