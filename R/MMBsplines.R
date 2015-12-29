@@ -45,6 +45,20 @@ REMLlogprofile.dense = function(x,obj) {
   logL
 }
 
+#' MMBsplines
+#' 
+#' @param response name of response variable
+#' @param explanatory name of explanatory variable
+#' @param data data frame with the data
+#' @param xmin minimum value of x
+#' @param xmax maximum value of x
+#' @param nseg number of segments
+#' @param deg degree of B-splines, default deg=2
+#' @param sparse sparse model
+#' @param lambda penalty parameter
+#' @param optimize boolean, default TRUE
+#' @param Psplines boolean, default TRUE
+#' @export
 MMBsplines = function(response, explanatory, data, 
                       xmin, xmax, nseg, deg=2, sparse=TRUE, lambda = 1.0, optimize=TRUE, Psplines=TRUE)
 {
@@ -97,7 +111,6 @@ MMBsplines = function(response, explanatory, data,
   ssy = sum(y^2)
   
   # in the for-loop we use update of Cholesky:
-  lambda = 1.0
   C = UtU + lambda * Q_all
   cholC = chol(C)
   L = list(C, cholC=cholC,UtU=UtU,Uty=Uty,Q_all = Q_all, 
@@ -154,6 +167,7 @@ logLprofile = function(obj,grid)
   sapply(grid,REMLlogprofile,obj)  
 }
 
+#' @export
 predict = function(obj, x, linear = FALSE)
 {
   if (linear) {
@@ -185,6 +199,7 @@ predict = function(obj, x, linear = FALSE)
   }
 }
 
+#' @export
 summary.MMBsplines = function(obj)
 {
   cat("lambda:      ",    obj$lambda_opt, 
