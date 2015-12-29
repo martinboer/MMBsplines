@@ -14,17 +14,13 @@ set.seed(949030)
 sim.fun = function(x) { return(3.0 + 0.1*x + sin(2*pi*x))}
 x = runif(nobs, min = xmin, max = xmax)
 y = sim.fun(x) + 0.5*rnorm(nobs)
-data = data.frame(x=x, y=y)
-data = data[order(data$x), ]
-head(data)
 
 # low penalty, high penalty, REML estimate:
 df = data.frame(lambda=c(0.001,100.0,1.0),opt = c(FALSE,FALSE,TRUE))
 
 for (i in 1:nrow(df))
 {
-  obj = MMBsplines(response="y", explanatory="x", data = data, xmin, xmax, nseg = 100, 
-                   lambda = df$lambda[i], optimize = df$opt[i])
+  obj = MMBsplines(x, y, xmin, xmax, nseg = 100, lambda = df$lambda[i], optimize = df$opt[i])
 
   # predictions on a dense grid:
   x0 = seq(xmin, xmax, by=0.01)

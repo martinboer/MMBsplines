@@ -6,9 +6,8 @@
 
 #' Mixed Model B-splines main function
 #' 
-#' @param response name of response variable
-#' @param explanatory name of explanatory variable
-#' @param data data frame with the data
+#' @param x explanatory variable
+#' @param y response variable
 #' @param xmin minimum value of x
 #' @param xmax maximum value of x
 #' @param nseg number of segments
@@ -18,12 +17,10 @@
 #' @param optimize boolean, default TRUE
 #' @param Psplines boolean, default TRUE
 #' @export
-MMBsplines = function(response, explanatory, data, 
+MMBsplines = function(x, y, 
                       xmin, xmax, nseg, deg=2, sparse=TRUE, 
                       lambda = 1.0, optimize=TRUE, Psplines=TRUE)
 {
-  y = data[[response]]
-  x = data[[explanatory]]
   t0 = proc.time()[1]
   p = 2
   N = length(y)
