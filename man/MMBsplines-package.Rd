@@ -15,7 +15,7 @@ The computation time for the algorithm is linear in the number of B-splines.
 \tabular{ll}{
 Package: \tab MMBsplines\cr
 Type: \tab Package\cr
-Version: \tab 1.09\cr
+Version: \tab 1.091\cr
 Date: \tab 2015-12-29\cr
 License: \tab GPL\cr
 }

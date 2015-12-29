@@ -50,12 +50,11 @@ MMBsplines = function(x, y,
     if (degree == 3 && !Psplines) {
       A = (1/6)*(abs(row(A)-col(A))==1) + diag(4/6,m-2)
     }
-    #P = t(D) %*% A %*% D
-    B = D %*% t(D)
-    Q = B %*% A %*% B
-    log_det_B = as.double(determinant(B)$modulus)
+    DDt = D %*% t(D)
+    Q = DDt %*% A %*% DDt
+    log_det_DDt = as.double(determinant(DDt)$modulus)
     log_det_A = as.double(determinant(A)$modulus)
-    log_det_Q = 2*log_det_B + log_det_A
+    log_det_Q = 2*log_det_DDt + log_det_A
     #if (nseg > 500) {
     #  Q = Q + 1.0e-12*diag.spam(m-2)
     #}  
