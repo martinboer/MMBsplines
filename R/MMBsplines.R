@@ -11,22 +11,22 @@
 #' @param xmin minimum value of x
 #' @param xmax maximum value of x
 #' @param nseg number of segments
-#' @param deg degree of B-splines, default deg=2
+#' @param degree degree of B-splines, default degree=3
 #' @param sparse sparse model
 #' @param lambda penalty parameter
 #' @param optimize boolean, default TRUE
 #' @param Psplines boolean, default TRUE
 #' @export
 MMBsplines = function(x, y, 
-                      xmin, xmax, nseg, deg=2, sparse=TRUE, 
+                      xmin, xmax, nseg, degree = 3, sparse=TRUE, 
                       lambda = 1.0, optimize=TRUE, Psplines=TRUE)
 {
   t0 = proc.time()[1]
   p = 2
   N = length(y)
   dx = (xmax - xmin) / nseg
-  knots = seq(xmin - deg * dx, xmax + deg * dx, by = dx)
-  B = splineDesign.sparse(knots, x, derivs=rep(0,N), ord = deg + 1)
+  knots = seq(xmin - degree * dx, xmax + degree * dx, by = dx)
+  B = splineDesign.sparse(knots, x, derivs=rep(0,N), ord = degree + 1)
   
   m = ncol(B)
   X = matrix(outer(x,c(0:(p-1)),"^"),ncol=p)
@@ -47,7 +47,7 @@ MMBsplines = function(x, y,
   else
   {
     A = diag.spam(m-2)
-    if (deg == 3 && !Psplines) {
+    if (degree == 3 && !Psplines) {
       A = (1/6)*(abs(row(A)-col(A))==1) + diag(4/6,m-2)
     }
     #P = t(D) %*% A %*% D
@@ -72,7 +72,7 @@ MMBsplines = function(x, y,
   cholC = chol(C)
   L = list(C, cholC=cholC,UtU=UtU,Uty=Uty,Q_all = Q_all, 
               ssy=ssy, p=p, q=q, N=N, log_det_Q = log_det_Q,xmin=xmin,xmax=xmax,nseg=nseg,
-           deg=deg,knots=knots)
+           deg=degree,knots=knots)
   if (optimize)
   {
     if (sparse==FALSE)
