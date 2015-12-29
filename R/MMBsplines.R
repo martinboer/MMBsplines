@@ -45,8 +45,11 @@ REMLlogprofile.dense = function(x,obj) {
   logL
 }
 
-MMBsplines = function(x,y,xmin,xmax,nseg,deg=2,sparse=TRUE,lambda = 1.0, optimize=TRUE,Psplines=TRUE)
+MMBsplines = function(response, explanatory, data, 
+                      xmin, xmax, nseg, deg=2, sparse=TRUE, lambda = 1.0, optimize=TRUE, Psplines=TRUE)
 {
+  y = data[[response]]
+  x = data[[explanatory]]
   t0 = proc.time()[1]
   p = 2
   N = length(y)
@@ -187,8 +190,8 @@ summary.MMBsplines = function(obj)
   cat("lambda:      ",    obj$lambda_opt, 
     "\nsigma2:      ", obj$sigma2, 
     "\nb0:          ", obj$a[1],
-    "\nb1:          ", obj$a[2],
-    "\ncomp. time:  ", obj$time, ' seconds\n')
+    "\nb1:          ", obj$a[2], '\n')
+  #  "\ncomp. time:  ", obj$time, ' seconds\n')
 }
 
 # # simple function to convert from Matrix to spam:
