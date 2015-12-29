@@ -4,7 +4,7 @@
 # E-mail: martin.boer@wur.nl  
 #
 
-#' MMBsplines
+#' Mixed Model B-splines main function
 #' 
 #' @param response name of response variable
 #' @param explanatory name of explanatory variable
@@ -19,7 +19,8 @@
 #' @param Psplines boolean, default TRUE
 #' @export
 MMBsplines = function(response, explanatory, data, 
-                      xmin, xmax, nseg, deg=2, sparse=TRUE, lambda = 1.0, optimize=TRUE, Psplines=TRUE)
+                      xmin, xmax, nseg, deg=2, sparse=TRUE, 
+                      lambda = 1.0, optimize=TRUE, Psplines=TRUE)
 {
   y = data[[response]]
   x = data[[explanatory]]
