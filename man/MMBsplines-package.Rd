@@ -1,6 +1,6 @@
 \name{MMBsplines-package}
 \alias{MMBsplines-package}
-\alias{MMBsplines}
+%\alias{MMBsplines}
 \docType{package}
 \title{
 Mixed Model B-splines algorithm.
