@@ -2,4 +2,5 @@
 
 export(MMBsplines)
 export(predict)
+export(splineDesign.sparse)
 export(summary.MMBsplines)

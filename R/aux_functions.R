@@ -4,7 +4,8 @@
 # E-mail: martin.boer@wur.nl  
 #
 
-# converter from splineDesign to spam:
+# 'converter from splineDesign to spam:
+#' @export
 splineDesign.sparse = function(knots, x, ord = 4, derivs, outer.ok = FALSE) {
   as.spam.dgCMatrix(splineDesign(knots, x, ord, derivs, sparse = TRUE, outer.ok = outer.ok))
 }
