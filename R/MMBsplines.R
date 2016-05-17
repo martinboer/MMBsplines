@@ -76,10 +76,10 @@ MMBsplines = function(x, y,
   {
     if (sparse==FALSE)
     {
-      result = optimize(REMLlogprofile.dense,c(-6,6),tol=1.0e-8,obj=L,maximum=TRUE)
+      result = optimize(REMLlogprofile.dense,c(-6,6),tol=1.0e-12,obj=L,maximum=TRUE)
     } else
     {
-      result = optimize(REMLlogprofile.sparse,c(-6,6),tol=1.0e-8,obj=L,maximum=TRUE)
+      result = optimize(REMLlogprofile.sparse,c(-6,6),tol=1.0e-12,obj=L,maximum=TRUE)
     }
   
     lambda_opt = 10^(result$maximum)
@@ -106,6 +106,10 @@ MMBsplines = function(x, y,
   yPy = ssy - sum(a*Uty) 
   sigma2 = yPy/(N-p)
   
+  # calc ED dimension, not optimized:
+  C = UtU + lambda_opt * Q_all
+  ed = sum(diag(solve(as.matrix(C)) %*% as.matrix(UtU)))
+  
   t1 = proc.time()[1]
   L$time = as.double(t1-t0)
   L$lambda_opt = lambda_opt
@@ -113,6 +117,7 @@ MMBsplines = function(x, y,
   L$cholC = cholC
   L$a = a
   L$sigma2 = sigma2  
+  L$ed = ed
   L$method = ifelse(sparse,"SPARSE","DENSE")
   class(L) = "MMBsplines"
   L
